@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<modDesc descVersion="44">
+    <author>LS-Modcompany / kevink98</author>
+    <version>1.0.0.0</version>
+	
+    <title>
+		<en>GlobalCompany Addon - Realistic Milking Time</en>
+		<de>GlobalCompany Addon - Realistische Melkzeiten</de>
+    </title>
+	
+	<description>
+		<en><![CDATA[
+
+Information: Mod is only usable in combination with GlobalCompany!]]></en>
+		<de><![CDATA[
+
+Information: Mod nur in Verbindung mit GlobalCompany spielbar!]]></de>
+    
+	</description>	
+	
+	<iconFilename>GC_AddOnMilkingTime.dds</iconFilename>
+	<multiplayer supported="true"/>
+
+    <globalCompany minimumVersion="1.0.0.0">
+        <customClasses>
+            <customClass name="GC_AddOnRealisticMilkingTime"/>
+        </customClasses>
+    </globalCompany>
+		
+    <extraSourceFiles>
+        <sourceFile filename="scripts/GC_Checker.lua" />
+        <sourceFile filename="scripts/GC_AddOnRealisticMilkingTime.lua" />
+    </extraSourceFiles>
+</modDesc>
