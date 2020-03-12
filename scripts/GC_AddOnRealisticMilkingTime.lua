@@ -22,7 +22,7 @@
 --
 
 GC_AddOnRealisticMilkingTime = {}
-GC_AddOnRealisticMilkingTime.TIMES = {6,18}
+GC_AddOnRealisticMilkingTime.TIMES = { 6, 18 }
 
 function GC_AddOnRealisticMilkingTime:initGlobalCompany(customEnvironment, baseDirectory, xmlFile)
 	if (g_company == nil) or (GC_AddOnRealisticMilkingTime.isInitiated ~= nil) then
@@ -32,7 +32,6 @@ function GC_AddOnRealisticMilkingTime:initGlobalCompany(customEnvironment, baseD
 	GC_AddOnRealisticMilkingTime.debugIndex = g_company.debug:registerScriptName("GC_AddOnRealisticMilkingTime");
 	GC_AddOnRealisticMilkingTime.modName = customEnvironment;
 	GC_AddOnRealisticMilkingTime.isInitiated = true;
-
 	
 	GC_AddOnRealisticMilkingTime.old_HusbandryModuleBase_changeFillLevels = HusbandryModuleBase.changeFillLevels
 	HusbandryModuleBase.changeFillLevels = function(modul, fillDelta, fillTypeIndex) return GC_AddOnRealisticMilkingTime:changeFillLevels(modul, fillDelta, fillTypeIndex) end
@@ -41,8 +40,6 @@ function GC_AddOnRealisticMilkingTime:initGlobalCompany(customEnvironment, baseD
 	AnimalHusbandry.saveToXMLFile = g_company.utils.appendedFunction(AnimalHusbandry.saveToXMLFile, GC_AddOnRealisticMilkingTime.saveToXMLFile)
 
 	g_company.addInit(GC_AddOnRealisticMilkingTime, GC_AddOnRealisticMilkingTime.init);
-
-	GC_AddOnRealisticMilkingTime.registeredModules = {}
 end
 
 function GC_AddOnRealisticMilkingTime:init()	
@@ -53,9 +50,6 @@ function GC_AddOnRealisticMilkingTime:changeFillLevels(modul, fillDelta, fillTyp
 	if fillTypeIndex == FillType.MILK and fillDelta > 0 then
 		local delta = 0.0
 		if modul.fillLevels[fillTypeIndex] ~= nil then
-			if GC_AddOnRealisticMilkingTime.registeredModules[modul] == nil then
-				GC_AddOnRealisticMilkingTime.registeredModules[modul] = true
-			end
 			if modul.realisticMilkingTimeLevel == nil then
 				modul.realisticMilkingTimeLevel = 0
 			end
@@ -64,7 +58,6 @@ function GC_AddOnRealisticMilkingTime:changeFillLevels(modul, fillDelta, fillTyp
 			newFillLevel = math.max(newFillLevel, 0.0)
 			delta = newFillLevel - oldFillLevel
 			modul.realisticMilkingTimeLevel = MathUtil.clamp(newFillLevel, 0.0, modul:getCapacity())
-			print(fillDelta)
 		end
 		return delta
 	else
@@ -73,24 +66,26 @@ function GC_AddOnRealisticMilkingTime:changeFillLevels(modul, fillDelta, fillTyp
 end
 
 function GC_AddOnRealisticMilkingTime:hourChanged()
-	local currentHour = g_currentMission.environment.currentHour
-	for _,time in pairs(GC_AddOnRealisticMilkingTime.TIMES) do
-		if time == currentHour then
-			for _, husbandry in pairs(g_currentMission:getHusbandries()) do
-				local modul = husbandry.modulesByName["milk"]	
-				if modul.realisticMilkingTimeLevel ~= nil and modul.realisticMilkingTimeLevel > 0 then
-					fillDelta = modul.realisticMilkingTimeLevel
-					local oldFillLevel = modul.fillLevels[FillType.MILK]
-					local newFillLevel = oldFillLevel + fillDelta
-					newFillLevel = math.max(newFillLevel, 0.0)
-					delta = newFillLevel - oldFillLevel
-					local oldTotalFillLevel = modul:getTotalFillLevel()
-					local capacity = modul:getCapacity()
-					local newTotalFillLevel = oldTotalFillLevel + delta
-					newTotalFillLevel = MathUtil.clamp(newTotalFillLevel, 0.0, capacity)
-					delta = newTotalFillLevel - oldTotalFillLevel
-					modul:setFillLevel(FillType.MILK, newTotalFillLevel)
-					modul.realisticMilkingTimeLevel = 0   
+	if g_server ~= nil then
+		local currentHour = g_currentMission.environment.currentHour
+		for _,time in pairs(GC_AddOnRealisticMilkingTime.TIMES) do
+			if time == currentHour then
+				for _,husbandry in pairs(g_currentMission.husbandries) do
+					local modul = husbandry.modulesByName["milk"]	
+					if modul ~= nil and modul.realisticMilkingTimeLevel ~= nil and modul.realisticMilkingTimeLevel > 0 then
+						fillDelta = modul.realisticMilkingTimeLevel
+						local oldFillLevel = modul.fillLevels[FillType.MILK]
+						local newFillLevel = oldFillLevel + fillDelta
+						newFillLevel = math.max(newFillLevel, 0.0)
+						delta = newFillLevel - oldFillLevel
+						local oldTotalFillLevel = modul:getTotalFillLevel()
+						local capacity = modul:getCapacity()
+						local newTotalFillLevel = oldTotalFillLevel + delta
+						newTotalFillLevel = MathUtil.clamp(newTotalFillLevel, 0.0, capacity)
+						delta = newTotalFillLevel - oldTotalFillLevel
+						modul:setFillLevel(FillType.MILK, newTotalFillLevel)
+						modul.realisticMilkingTimeLevel = 0   
+					end
 				end
 			end
 		end
@@ -100,7 +95,9 @@ end
 function GC_AddOnRealisticMilkingTime:loadFromXMLFile(husbandry, ret, xmlFile, key)
 	if ret then
 		local modul = husbandry.modulesByName["milk"]	
-		modul.realisticMilkingTimeLevel = getXMLFloat(xmlFile, key .. "#realisticMilkingTimeLevel")
+		if modul ~= nil then
+			modul.realisticMilkingTimeLevel = getXMLFloat(xmlFile, key .. "#realisticMilkingTimeLevel")
+		end
 		return true
 	end
 	return ret
@@ -108,7 +105,7 @@ end
 
 function GC_AddOnRealisticMilkingTime:saveToXMLFile(husbandry, ret, xmlFile, key, usedModNames)
 	local modul = husbandry.modulesByName["milk"]
-	if modul.realisticMilkingTimeLevel ~= nil and modul.realisticMilkingTimeLevel > 0 then
+	if modul ~= nil and modul.realisticMilkingTimeLevel ~= nil and modul.realisticMilkingTimeLevel > 0 then
 		setXMLFloat(xmlFile, key .. "#realisticMilkingTimeLevel", modul.realisticMilkingTimeLevel)
 	end
 end

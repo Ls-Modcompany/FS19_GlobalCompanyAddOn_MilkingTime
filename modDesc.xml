@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="44">
+<modDesc descVersion="47">
     <author>LS-Modcompany / kevink98</author>
     <version>1.0.0.0</version>
 	
@@ -9,19 +9,20 @@
     </title>
 	
 	<description>
-		<en><![CDATA[
+		<en><![CDATA[Cows are milked twice a day. To adjust this, milk is now credited at 6 am and 6 pm.
+In between you do not get any milk.
 
 Information: Mod is only usable in combination with GlobalCompany!]]></en>
-		<de><![CDATA[
+		<de><![CDATA[Kühe werden zweimal pro Tag gemolken. Um dies nachzustellen wird Milch nun um 6 Uhr morgens und um 18 Uhr abends gutgeschrieben.
+Dazwischen erhält man keine Milch.
 
 Information: Mod nur in Verbindung mit GlobalCompany spielbar!]]></de>
-    
 	</description>	
 	
 	<iconFilename>GC_AddOnMilkingTime.dds</iconFilename>
 	<multiplayer supported="true"/>
 
-    <globalCompany minimumVersion="1.0.0.0">
+    <globalCompany minimumVersion="1.3.0.0">
         <customClasses>
             <customClass name="GC_AddOnRealisticMilkingTime"/>
         </customClasses>
